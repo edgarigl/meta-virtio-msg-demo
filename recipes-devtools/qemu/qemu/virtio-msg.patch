@@ -1975,10 +1975,10 @@ index 0000000000..951b09fbf1
 +type_init(virtio_msg_bus_sapphire_register_types)
 diff --git a/hw/virtio/virtio-msg-bus-vek280-hexcam.c b/hw/virtio/virtio-msg-bus-vek280-hexcam.c
 new file mode 100644
-index 0000000000..f3e203d291
+index 0000000000..6100c598f7
 --- /dev/null
 +++ b/hw/virtio/virtio-msg-bus-vek280-hexcam.c
-@@ -0,0 +1,371 @@
+@@ -0,0 +1,380 @@
 +/*
 + * VirtIO MSG bus for the VEK280 hexcam design.
 + * This uses switchboards underlying queue's (mmap) to transfer messages.
@@ -2087,13 +2087,18 @@ index 0000000000..f3e203d291
 +{
 +    VirtIOMSGBusVEK280HexCam *s = VIRTIO_MSG_BUS_VEK280_HEXCAM(opaque);
 +    VirtIOMSGBusDevice *bd = VIRTIO_MSG_BUS_DEVICE(opaque);
-+    vek280_mask_interrupt(s, true);
++    uint32_t r;
++//    vek280_mask_interrupt(s, true);
 +
-+    /* ACK the interrupt.  */
-+    virtio_msg_bus_process(bd);
-+    vek280_mask_interrupt(s, false);
-+    /* avoid race. */
-+    virtio_msg_bus_process(bd);
++    do {
++        /* ACK the interrupt.  */
++        vek280_write32(s->msg.irq, 0x0);
++        smp_mb();
++        virtio_msg_bus_process(bd);
++        r = vek280_read32(s->msg.irq);
++    } while (r & 1);
++
++//    vek280_mask_interrupt(s, false);
 +}
 +
 +static int virtio_msg_bus_vek280_send(VirtIOMSGBusDevice *bd, VirtIOMSG *msg_req,
@@ -2256,6 +2261,10 @@ index 0000000000..f3e203d291
 +    s->msg.cfg_bram = mmap(0, 8 * 1024, PROT_READ | PROT_WRITE, MAP_SHARED,
 +                           s->msg.fd_devmem, 0x020200004000ULL);
 +    assert(s->msg.cfg_bram != MAP_FAILED);
++
++    s->msg.irq = mmap(0, 4 * 1024, PROT_READ | PROT_WRITE, MAP_SHARED,
++                           s->msg.fd_devmem, 0x020200050000ULL);
++    assert(s->msg.irq != MAP_FAILED);
 +
 +    /* Wait for queue setup. */
 +    printf("Wait for queue\n");
@@ -4629,10 +4638,10 @@ index 0000000000..2a4adcbd08
 +#endif
 diff --git a/include/hw/virtio/virtio-msg-bus-vek280-hexcam.h b/include/hw/virtio/virtio-msg-bus-vek280-hexcam.h
 new file mode 100644
-index 0000000000..55ccd7d686
+index 0000000000..199c2b4116
 --- /dev/null
 +++ b/include/hw/virtio/virtio-msg-bus-vek280-hexcam.h
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,65 @@
 +/*
 + * VirtIO MSG bus for the VEK280 hexcam design.
 + *
@@ -4679,6 +4688,7 @@ index 0000000000..55ccd7d686
 +
 +        /* Memmap.  */
 +        uint32_t *doorbell;
++        uint32_t *irq;
 +        uint32_t *cfg_bram;
 +        void *driver;
 +        void *device;
