@@ -1975,10 +1975,10 @@ index 0000000000..951b09fbf1
 +type_init(virtio_msg_bus_sapphire_register_types)
 diff --git a/hw/virtio/virtio-msg-bus-vek280-hexcam.c b/hw/virtio/virtio-msg-bus-vek280-hexcam.c
 new file mode 100644
-index 0000000000..6100c598f7
+index 0000000000..28958666c6
 --- /dev/null
 +++ b/hw/virtio/virtio-msg-bus-vek280-hexcam.c
-@@ -0,0 +1,380 @@
+@@ -0,0 +1,378 @@
 +/*
 + * VirtIO MSG bus for the VEK280 hexcam design.
 + * This uses switchboards underlying queue's (mmap) to transfer messages.
@@ -2036,10 +2036,8 @@ index 0000000000..6100c598f7
 +
 +static void virtio_msg_bus_vek280_send_notify(VirtIOMSGBusVEK280HexCam *s)
 +{
-+    vek280_write32(s->msg.doorbell, 0x1);
-+    usleep(10);
 +    vek280_write32(s->msg.doorbell, 0x0);
-+    usleep(10);
++    vek280_write32(s->msg.doorbell, 0x1);
 +}
 +
 +static AddressSpace *virtio_msg_bus_vek280_get_remote_as(VirtIOMSGBusDevice *bd)
