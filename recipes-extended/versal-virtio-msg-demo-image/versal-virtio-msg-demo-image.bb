@@ -33,6 +33,11 @@ DEFAULT_XILINX_QEMU:aarch64 = "qemu"
 QEMU_TARGETS = "aarch64"
 IMAGE_INSTALL:append = " qemu"
 
+# Install a BOOT.BIN into /boot
+IMAGE_INSTALL:append = " xilinx-bootbin"
+# Install Xen into /boot
+IMAGE_INSTALL:append = " xen"
+
 # Debugging tools
 IMAGE_INSTALL:append = " gdb strace ltrace tcf-agent"
 
