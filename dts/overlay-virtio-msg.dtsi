@@ -1,0 +1,36 @@
+//
+// Virtio-msg overlay.
+//
+// Copyright (c) 2024 Advanced Micro Devices, Inc.
+// Written by Edgar E. Iglesias <edgar.iglesias@amd.com>
+//
+// SPDX-License-Identifier: MIT
+//
+/ {
+	axi {
+                user_io@0 {
+                        status = "okay";
+			// This is the custom UIO driver that allows
+			// user-space to map address-ranges as
+			// Non-Cached Normal Memory.
+                        compatible = "mydevice,generic-uio,ui_pdrv";
+			// reg[0] is the AXI/PCI Bridge to DMA onto the host.
+			// reg[1] is the PL BRAM for SPSC queue setup.
+                        reg = <0x04A0 0x00000000 0x8 0x60000000
+                               0x0202 0x00004000 0x0 0x2000>;
+                        // Level triggered PL-to-PS interrupts
+                        interrupts = <0 87 4>;
+                };
+
+                user_irq@0 {
+			// This node doesn't bind to anything, it's needed
+			// For Xen to S2 map these ranges onto dom0.
+                        status = "okay";
+                        compatible = "pl-irq";
+			// reg[0] = MSI doorbell towards host.
+			// reg[1] = PL GPIO to ACK interrupts from host.
+                        reg = <0x201 0x80000000 0x0 0x1000
+                               0x202 0x00050000 0x0 0x1000 >;
+                };
+	};
+};

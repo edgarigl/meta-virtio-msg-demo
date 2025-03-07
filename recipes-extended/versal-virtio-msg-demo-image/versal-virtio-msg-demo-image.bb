@@ -35,6 +35,8 @@ IMAGE_INSTALL:append = " qemu"
 
 # Install a BOOT.BIN into /boot
 IMAGE_INSTALL:append = " xilinx-bootbin"
+# Custom DTB into /boot/
+IMAGE_INSTALL:append = " device-tree"
 # Install Xen into /boot
 IMAGE_INSTALL:append = " xen"
 
