@@ -12,6 +12,7 @@ SRC_URI = "file://BOOT.BIN \
 S = "${WORKDIR}"
 
 PROVIDES = "virtual/boot-bin"
+DEPENDS += "${UBOOT_BOOT_SCRIPT}"
 
 FILES:${PN} += "/boot/BOOT.bin"
 
