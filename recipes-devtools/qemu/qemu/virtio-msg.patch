@@ -1,4 +1,4 @@
-Upstream-Status: Inappropriate work in progress
+Upstream-Status: Inappropriate [work in progress]
 diff --git a/docs/devel/virtio-msg.rst b/docs/devel/virtio-msg.rst
 new file mode 100644
 index 0000000000..e69f8e3f44

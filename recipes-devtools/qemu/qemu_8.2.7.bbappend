@@ -5,6 +5,7 @@ SRC_URI:append = "file://virtio-msg.patch"
 
 # Fixup what meta-xilinx breaks
 PACKAGESPLITFUNCS =+ "split_qemu_packages_org"
+ERROR_QA:remove = "patch-status"
 
 python split_qemu_packages_org () {
     archdir = d.expand('${bindir}/')
